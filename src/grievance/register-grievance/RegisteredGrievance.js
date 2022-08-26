@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import ConfirmationModal from "../../components/ConfirmationalModal/ConfirmationalModal";
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
 import Table from "@mui/material/Table";
@@ -15,16 +16,46 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import IconButton from "@mui/material/IconButton";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import TablePagination from "@mui/material/TablePagination";
+import Moment from 'react-moment';
 
-export default function RegisteredGrievance() {
-  const [countries, setCountries] = useState(undefined);
-  const [country, setCountry] = useState("");
-  const [selectedCountryId, setSelectedCountryId] = useState("");
+export default function AddGrievances() {
+  const [grievances, setGrievances] = useState([]);
+  const [grievance, setGrievance] = useState(undefined);
+
+  const [selectedGrievanceId, setSelectedGrievanceId] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(+event.target.value);
+    setPage(0);
+  };
+
+  const fetchAllGrievances = async (e) => {
+    const result = await fetch(process.env.REACT_APP_API_URL + "/grievance/", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const data = await result.json();
+    console.log(data);
+    setGrievances(data.data);
+  };
+
+  useEffect(() => {
+    fetchAllGrievances();
+  }, []);
 
   return (
     <>
@@ -35,7 +66,12 @@ export default function RegisteredGrievance() {
         alignItems="center"
       >
         <Grid item>
-          <h2>Registered Grievance</h2>
+          <h2>Grievances</h2>
+        </Grid>
+        <Grid item>
+          <Button variant="contained" onClick={() => setShowAddModal(true)}>
+            Add Grievance
+          </Button>
         </Grid>
       </Grid>
       <TableContainer component={Paper} style={{ marginTop: 30 }}>
@@ -43,70 +79,79 @@ export default function RegisteredGrievance() {
           <TableHead>
             <TableRow>
               <TableCell>Sr. No.</TableCell>
-              <TableCell align="left">Name</TableCell>
-              <TableCell align="left" style={{ paddingLeft: 25 }}>
-                Actions
-              </TableCell>
+              <TableCell align="left">Title</TableCell>
+              <TableCell align="left">Status</TableCell>
+              <TableCell align="left">createdAt</TableCell>
+              <TableCell align="left">DeletedAt</TableCell>
+              <TableCell align="left">Action</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {countries &&
-              countries.map((row, index) => (
-                <TableRow
-                  key={row._id}
-                  sx={{
-                    "&:last-child td, &:last-child th": { border: 0 },
-                    padding: 8,
-                  }}
-                >
-                  <TableCell component="th" scope="row">
-                    {index + 1}.
-                  </TableCell>
-                  <TableCell align="left">{row.name}</TableCell>
-                  <TableCell align="left">
-                    <IconButton
-                      onClick={() => {
-                        setShowEditModal(true);
-                        setCountry(row.name);
-                        setSelectedCountryId(row._id);
-                      }}
-                    >
-                      <EditIcon fontSize="small" />
-                    </IconButton>
-                    <IconButton
-                      onClick={() => {
-                        setShowDeleteModal(true);
-                        setCountry(row.name);
-                        setSelectedCountryId(row._id);
-                      }}
-                    >
-                      <DeleteIcon fontSize="small" />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              ))}
+          {
+            grievances &&
+            grievances
+                .map((row, index) => (
+                 
+                  <TableRow
+                    key={row._id}
+                    sx={{
+                      "&:last-child td, &:last-child th": { border: 0 },
+                      padding: 8,
+                    }}
+                  >
+                    <TableCell component="th" scope="row">
+                      {index + 1}
+                    </TableCell>
+                    <TableCell align="left">{row.title}</TableCell>
+                    <TableCell align="left">{row.status}</TableCell>
+                    <TableCell align="left"><Moment format="YYYY/MM/DD">{row.createdAt}</Moment></TableCell>
+                    <TableCell align="left"><Moment format="YYYY/MM/DD">{row.createdAt}</Moment></TableCell>
+                    <TableCell align="left">
+                      <IconButton
+                        onClick={() => {
+                          setShowEditModal(true);
+                          setGrievance(row._id);
+                          setSelectedGrievanceId(row._id);
+                        }}
+                      >
+                        <VisibilityIcon fontSize="small"/>
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
+                  ))
+              }
           </TableBody>
         </Table>
       </TableContainer>
+
+      <TablePagination
+        rowsPerPageOptions={[10, 25, 100]}
+        component="div"
+        count={`${grievances.length}`}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+      />
 
       <Dialog
         open={showAddModal}
         onClose={() => {
           setShowAddModal(false);
-          setCountry("");
+          setGrievance("");
         }}
         fullWidth={true}
         maxWidth="xs"
       >
-        <DialogTitle style={{ paddingBottom: 0 }}>Add Country</DialogTitle>
+        <DialogTitle style={{ paddingBottom: 0 }}>Add Grievance</DialogTitle>
         <DialogContentText></DialogContentText>
         <DialogContent>
           <TextField
             autoFocus
-            label="Country"
+            label="Grievance"
             type="text"
-            value={country}
-            onChange={(e) => setCountry(e.target.value)}
+            value={grievance}
+            onChange={(e) => setGrievance(e.target.value)}
             fullWidth
             variant="outlined"
             size="small"
@@ -116,12 +161,12 @@ export default function RegisteredGrievance() {
           <Button
             onClick={() => {
               setShowAddModal(false);
-              setCountry("");
+              setGrievance("");
             }}
           >
             Cancel
           </Button>
-          <Button disabled={!country}>Add</Button>
+          <Button>Add</Button>
         </DialogActions>
       </Dialog>
 
@@ -129,20 +174,20 @@ export default function RegisteredGrievance() {
         open={showEditModal}
         onClose={() => {
           setShowEditModal(false);
-          setCountry("");
+          setGrievance("");
         }}
         fullWidth={true}
         maxWidth="xs"
       >
-        <DialogTitle style={{ paddingBottom: 0 }}>Edit Country</DialogTitle>
+        <DialogTitle style={{ paddingBottom: 0 }}>Edit Grievance</DialogTitle>
         <DialogContentText></DialogContentText>
         <DialogContent>
           <TextField
             autoFocus
-            label="Country"
+            label="Grievance"
             type="text"
-            value={country}
-            onChange={(e) => setCountry(e.target.value)}
+            value={grievance}
+            onChange={(e) => setGrievance(e.target.value)}
             fullWidth
             variant="outlined"
             size="small"
@@ -152,14 +197,20 @@ export default function RegisteredGrievance() {
           <Button
             onClick={() => {
               setShowEditModal(false);
-              setCountry("");
+              setGrievance("");
             }}
           >
             Cancel
           </Button>
-          <Button disabled={!country}>Save</Button>
+          <Button>Save</Button>
         </DialogActions>
       </Dialog>
+
+      <ConfirmationModal
+        open={showDeleteModal}
+        message="Are you sure you want to delete this grievance?"
+        handleClose={() => setShowDeleteModal(false)}
+      />
     </>
   );
 }

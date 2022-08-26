@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import ConfirmationModal from "../components/ConfirmationalModal/ConfirmationalModal.js";
+import ConfirmationModal from "./ConfirmationalModal";
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
 import Table from "@mui/material/Table";
@@ -16,15 +16,14 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import IconButton from "@mui/material/IconButton";
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import TablePagination from "@mui/material/TablePagination";
-import Moment from 'react-moment';
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import TablePagination from '@mui/material/TablePagination';
 
-export default function AddGrievances() {
-  const [grievances, setGrievances] = useState([]);
-  const [grievance, setGrievance] = useState(undefined);
-
-  const [selectedGrievanceId, setSelectedGrievanceId] = useState("");
+export default function MainCategory() {
+  const [countries, setCountries] = useState([]);
+  const [country, setCountry] = useState("");
+  const [selectedCountryId, setSelectedCountryId] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -41,21 +40,20 @@ export default function AddGrievances() {
     setPage(0);
   };
 
-  const fetchAllGrievances = async (e) => {
-    const result = await fetch(process.env.REACT_APP_API_URL + "/grievance/", {
+  const fetchAllCountries = async (e) => {
+    const result = await fetch(process.env.REACT_APP_API_URL + "/country", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("Token")}`,
       },
     });
     const data = await result.json();
-    console.log(data);
-    setGrievances(data.data);
+    console.log(data)
+    setCountries(data.data);
   };
-
+ 
   useEffect(() => {
-    fetchAllGrievances();
+    fetchAllCountries();
   }, []);
 
   return (
@@ -67,11 +65,11 @@ export default function AddGrievances() {
         alignItems="center"
       >
         <Grid item>
-          <h2>Main Categories</h2>
+          <h2>Add Main-Category</h2>
         </Grid>
         <Grid item>
-          <Button sx={{background:'#00263b'}} variant="contained" onClick={() => setShowAddModal(true)}>
-            + Add Main Categories
+          <Button variant="contained" onClick={() => setShowAddModal(true)}>
+            + Add Main-Category
           </Button>
         </Grid>
       </Grid>
@@ -80,49 +78,47 @@ export default function AddGrievances() {
           <TableHead>
             <TableRow>
               <TableCell>Sr. No.</TableCell>
-              <TableCell align="left">Title</TableCell>
-              <TableCell align="left">Department</TableCell>
-              <TableCell align="left">Status</TableCell>
-              {/* <TableCell align="left">createdAt</TableCell>
-              <TableCell align="left">DeletedAt</TableCell> */}
-              <TableCell align="left">Action</TableCell>
+              <TableCell align="left">Name</TableCell>
+              <TableCell align="left">Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-          {
-            grievances &&
-            grievances
-                .map((row, index) => (
-                  row.map((row1,index1) => (
-                  <TableRow
-                    key={row1._id}
-                    sx={{
-                      "&:last-child td, &:last-child th": { border: 0 },
-                      padding: 8,
-                    }}
-                  >
-                    <TableCell component="th" scope="row">
-                      {index1 + 1}
-                    </TableCell>
-                    <TableCell align="left">{row1.description}</TableCell>
-                    <TableCell align="left">{row1.description}</TableCell>
-                    <TableCell align="left">{row1.status}</TableCell>
-                    {/* <TableCell align="left"><Moment format="YYYY/MM/DD">{row1.createdAt}</Moment></TableCell>
-                    <TableCell align="left"><Moment format="YYYY/MM/DD">{row1.createdAt}</Moment></TableCell> */}
-                    <TableCell align="left">
-                      <IconButton
-                        onClick={() => {
-                          setShowEditModal(true);
-                          setGrievance(row1._id);
-                          setSelectedGrievanceId(row1._id);
-                        }}
-                      >
-                        <VisibilityIcon fontSize="small"/>
-                      </IconButton>
-                    </TableCell>
-                  </TableRow>
-                  ))
-                ))}
+            {countries &&
+              countries
+              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              .map((row, index) => (
+                <TableRow
+                  key={row._id}
+                  sx={{
+                    "&:last-child td, &:last-child th": { border: 0 },
+                    padding: 8,
+                  }}
+                >
+                  <TableCell component="th" scope="row">
+                    {index + 1}.
+                  </TableCell>
+                  <TableCell align="left">{row.name}</TableCell>
+                  <TableCell align="left">
+                    <IconButton
+                      onClick={() => {
+                        setShowEditModal(true);
+                        setCountry(row.name);
+                        setSelectedCountryId(row._id);
+                      }}
+                    >
+                      <EditIcon fontSize="small" />
+                    </IconButton>
+                    <IconButton
+                      onClick={() => {
+                        setShowDeleteModal(true);
+                        setCountry(row.name);
+                      }}
+                    >
+                      <DeleteIcon fontSize="small" />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))}
           </TableBody>
         </Table>
       </TableContainer>
@@ -130,7 +126,7 @@ export default function AddGrievances() {
       <TablePagination
         rowsPerPageOptions={[10, 25, 100]}
         component="div"
-        count={`${grievances.length}`}
+        count={`${countries.length}`}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handleChangePage}
@@ -141,20 +137,20 @@ export default function AddGrievances() {
         open={showAddModal}
         onClose={() => {
           setShowAddModal(false);
-          setGrievance("");
+          setCountry("");
         }}
         fullWidth={true}
         maxWidth="xs"
       >
-        <DialogTitle style={{ paddingBottom: 0 }}>Add Grievance</DialogTitle>
+        <DialogTitle style={{ paddingBottom: 0 }}>Add MainCategory</DialogTitle>
         <DialogContentText></DialogContentText>
         <DialogContent>
           <TextField
             autoFocus
-            label="Grievance"
+            label="Main Category"
             type="text"
-            value={grievance}
-            onChange={(e) => setGrievance(e.target.value)}
+            value={country}
+            onChange={(e) => setCountry(e.target.value)}
             fullWidth
             variant="outlined"
             size="small"
@@ -164,7 +160,7 @@ export default function AddGrievances() {
           <Button
             onClick={() => {
               setShowAddModal(false);
-              setGrievance("");
+              setCountry("");
             }}
           >
             Cancel
@@ -177,20 +173,20 @@ export default function AddGrievances() {
         open={showEditModal}
         onClose={() => {
           setShowEditModal(false);
-          setGrievance("");
+          setCountry("");
         }}
         fullWidth={true}
         maxWidth="xs"
       >
-        <DialogTitle style={{ paddingBottom: 0 }}>Edit Grievance</DialogTitle>
+        <DialogTitle style={{ paddingBottom: 0 }}>Edit Country</DialogTitle>
         <DialogContentText></DialogContentText>
         <DialogContent>
           <TextField
             autoFocus
-            label="Grievance"
+            label="Country"
             type="text"
-            value={grievance}
-            onChange={(e) => setGrievance(e.target.value)}
+            value={country}
+            onChange={(e) => setCountry(e.target.value)}
             fullWidth
             variant="outlined"
             size="small"
@@ -200,7 +196,7 @@ export default function AddGrievances() {
           <Button
             onClick={() => {
               setShowEditModal(false);
-              setGrievance("");
+              setCountry("");
             }}
           >
             Cancel
@@ -211,7 +207,7 @@ export default function AddGrievances() {
 
       <ConfirmationModal
         open={showDeleteModal}
-        message="Are you sure you want to delete this grievance?"
+        message="Are you sure you want to delete this country?"
         handleClose={() => setShowDeleteModal(false)}
       />
     </>

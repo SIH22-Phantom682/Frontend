@@ -15,7 +15,6 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { mainListItems } from "./ListItem";
 import List from "@mui/material/List";
 import { deepOrange } from "@mui/material/colors";
-
 const drawerWidth = 240;
 
 const openedMixin = (theme) => ({
@@ -93,8 +92,6 @@ export default function BackupDash({ children }) {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
 
-
-
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -104,10 +101,10 @@ export default function BackupDash({ children }) {
   };
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{ display: "flex"}}>
       <CssBaseline />
 
-      <AppBar position="fixed" open={open}>
+      <AppBar position="fixed" open={open} sx={{marginTop:'60px' }}>
         <Toolbar sx={{ background: "#00263b" }}>
           <IconButton
             color="inherit"
@@ -131,7 +128,7 @@ export default function BackupDash({ children }) {
         </Toolbar>
       </AppBar>
       <Drawer variant="permanent" open={open}>
-        <DrawerHeader>
+        <DrawerHeader sx={{marginTop:'60px' }}>
           <IconButton onClick={handleDrawerClose}>
             {theme.direction === "rtl" ? (
               <ChevronRightIcon />
@@ -143,7 +140,7 @@ export default function BackupDash({ children }) {
         <Divider />
         <List>{mainListItems}</List>
       </Drawer>
-      <Box component="main" sx={{ flexGrow: 1, p: 3, overflow:'auto' }}>
+      <Box component="main" sx={{ flexGrow: 1, p: 3, overflow:'auto',marginTop:'60px' }}>
         <div style={{ marginTop: 60 }}>{children}</div>
       </Box>
     </Box>

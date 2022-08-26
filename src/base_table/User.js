@@ -41,22 +41,21 @@ export default function User() {
     setPage(0);
   };
 
-  const fetchAllGrievances = async (e) => {
-    const result = await fetch(process.env.REACT_APP_API_URL + "/grievance/", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("Token")}`,
-      },
-    });
-    const data = await result.json();
-    console.log(data);
-    setGrievances(data.data);
-  };
+  // const fetchAllGrievances = async (e) => {
+  //   const result = await fetch(process.env.REACT_APP_API_URL + "/grievance/", {
+  //     method: "GET",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
+  //   });
+  //   const data = await result.json();
+  //   console.log(data);
+  //   setGrievances(data.data);
+  // };
 
-  useEffect(() => {
-    fetchAllGrievances();
-  }, []);
+  // useEffect(() => {
+  //   fetchAllGrievances();
+  // }, []);
 
   return (
     <>

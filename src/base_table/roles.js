@@ -10,6 +10,21 @@ import Paper from "@mui/material/Paper";
 
 export default function Roles() {
   const [roles, setRoles] = useState(undefined);
+  const fetchAllCountries = async (e) => {
+    const result = await fetch(process.env.REACT_APP_API_URL + "/roles", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const data = await result.json();
+    console.log(data)
+    setRoles(data.data);
+  };
+ 
+  useEffect(() => {
+    fetchAllCountries();
+  }, []);
   return (
     <>
       <Grid container spacing={1} justifyContent="space-between" alignItems="center">

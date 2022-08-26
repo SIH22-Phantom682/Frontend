@@ -1,9 +1,5 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { formatDate } from "../../utils/common-utils";
-import { sortByCreatedAtDate, sortByDeadlineDate } from "../../utils/grievances-utils";
-import { getAllGrievances } from "../../api/services/grievances";
-import CustomChip from "../../components/common/CustomChip";
+import React, { useState, useEffect } from "react";
+import ConfirmationModal from "./ConfirmationalModal";
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
 import Table from "@mui/material/Table";
@@ -12,130 +8,211 @@ import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import TableSortLabel from "@mui/material/TableSortLabel";
 import Paper from "@mui/material/Paper";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
-import Box from "@mui/material/Box";
-import Container from "@mui/material/Container";
-import Pagination from "@mui/material/Pagination";
-import TableSkeleton from "../../components/skeleton/TableSkeleton";
+import TextField from "@mui/material/TextField";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+import IconButton from "@mui/material/IconButton";
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import TablePagination from "@mui/material/TablePagination";
+import Moment from 'react-moment';
 
-function a11yProps(index) {
-  return {
-    id: `simple-tab-${index}`,
-    "aria-controls": `simple-tabpanel-${index}`,
+export default function AddGrievances() {
+  const [grievances, setGrievances] = useState([]);
+  const [grievance, setGrievance] = useState(undefined);
+
+  const [selectedGrievanceId, setSelectedGrievanceId] = useState("");
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
   };
-}
 
-export default function AllGrievances() {
-  const [activeTab, setActiveTab] = useState(0);
-  const [grievances, setGrievances] = useState(undefined);
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(+event.target.value);
+    setPage(0);
+  };
 
-  const fetchAllgrievances = async () => {
-    const response = await getAllGrievances();
-    if (response.status === "success") {
-      setGrievances(response.data);
-    }
+  const fetchAllGrievances = async (e) => {
+    const result = await fetch(process.env.REACT_APP_API_URL + "/grievance/", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const data = await result.json();
+    console.log(data);
+    setGrievances(data.data);
   };
 
   useEffect(() => {
-    fetchAllgrievances();
+    fetchAllGrievances();
   }, []);
 
   return (
     <>
-      <Grid container spacing={1} justifyContent="space-between" alignItems="center">
+      <Grid
+        container
+        spacing={1}
+        justifyContent="space-between"
+        alignItems="center"
+      >
         <Grid item>
-          <h2>All Grievances</h2>
+          <h2>Grievances</h2>
+        </Grid>
+        <Grid item>
+          <Button variant="contained" onClick={() => setShowAddModal(true)}>
+            Add Grievance
+          </Button>
         </Grid>
       </Grid>
-      <Box sx={{ borderBottom: 1, borderColor: "divider", marginTop: "10px" }}>
-        <Tabs value={activeTab} onChange={(e, value) => setActiveTab(value)} aria-label="basic tabs example">
-          <Tab label="All" {...a11yProps(0)} />
-          <Tab label="Pending" {...a11yProps(1)} />
-          <Tab label="Review" {...a11yProps(2)} />
-        </Tabs>
-      </Box>
-      {activeTab === 0 && <TabTable data={grievances} />}
-      {activeTab === 1 && <TabTable data={grievances.filter((g) => g.status === "pending")} />}
-      {activeTab === 2 && <TabTable data={grievances.filter((g) => g.status === "review")} />}
-    </>
-  );
-}
-
-function TabTable({ data }) {
-  const [grievances, setGrievances] = useState(data);
-  const [createdAtOrder, setCreatedAtOrder] = useState("asc");
-  const [deadlineOrder, setDeadlineOrder] = useState("asc");
-  const [currentPage, setCurrentPage] = useState(1);
-  const navigate = useNavigate();
-
-  const handleCreatedAtSort = () => {
-    setGrievances(sortByCreatedAtDate(grievances, createdAtOrder));
-    setCreatedAtOrder(createdAtOrder === "asc" ? "desc" : "asc");
-  };
-
-  const handleDeadlineSort = () => {
-    setGrievances(sortByDeadlineDate(grievances, deadlineOrder));
-    setDeadlineOrder(deadlineOrder === "asc" ? "desc" : "asc");
-  };
-
-  return (
-    <>
       <TableContainer component={Paper} style={{ marginTop: 30 }}>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
             <TableRow>
               <TableCell>Sr. No.</TableCell>
-              <TableCell align="right">Title</TableCell>
-              <TableCell align="right">Main Category</TableCell>
-              <TableCell align="right">Subcategory</TableCell>
-              <TableCell align="right">Status</TableCell>
-              <TableCell align="right">
-                <TableSortLabel active={true} direction={createdAtOrder} onClick={handleCreatedAtSort}>
-                  Created At
-                </TableSortLabel>
-              </TableCell>
-              <TableCell align="right">
-                <TableSortLabel active={true} direction={deadlineOrder} onClick={handleDeadlineSort}>
-                  Deadline
-                </TableSortLabel>
-              </TableCell>
-              <TableCell align="right">Action</TableCell>
+              <TableCell align="left">Title</TableCell>
+              <TableCell align="left">Main Content</TableCell>
+              <TableCell align="left">Status</TableCell>
+              <TableCell align="left">createdAt</TableCell>
+              <TableCell align="left">DeletedAt</TableCell>
+              <TableCell align="left">Action</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {!data ? (
-              <TableSkeleton rows={7} columns={10} />
-            ) : (
-              data.slice((currentPage - 1) * 10, (currentPage - 1) * 10 + 10).map((row, index) => (
-                <TableRow key={row._id} sx={{ "&:last-child td, &:last-child th": { border: 0 }, padding: 8 }}>
-                  <TableCell component="th" scope="row">
-                    {index + 1}.
-                  </TableCell>
-                  <TableCell align="right">{row.title}</TableCell>
-                  <TableCell align="right">{row.category?.name}</TableCell>
-                  <TableCell align="right">{row.subCategory?.name}</TableCell>
-                  <TableCell align="right">
-                    <CustomChip status={row?.status} />
-                  </TableCell>
-                  <TableCell align="right">{formatDate(row.createdAt)}</TableCell>
-                  <TableCell align="right">{formatDate(row.deadline)}</TableCell>
-                  <TableCell align="right">
-                    <Button onClick={() => navigate(`/dashboard/grievances/show/${row._id}`)}>View Details</Button>
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
+          {
+            grievances &&
+            grievances
+                .map((row, index) => (
+                 
+                  <TableRow
+                    key={row._id}
+                    sx={{
+                      "&:last-child td, &:last-child th": { border: 0 },
+                      padding: 8,
+                    }}
+                  >
+                    <TableCell component="th" scope="row">
+                      {index + 1}
+                    </TableCell>
+                    <TableCell align="left">{row.title}</TableCell>
+                    <TableCell align="left">{row.dis}</TableCell>
+                    <TableCell align="left">{row.status}</TableCell>
+                    <TableCell align="left"><Moment format="YYYY/MM/DD">{row.createdAt}</Moment></TableCell>
+                    <TableCell align="left"><Moment format="YYYY/MM/DD">{row.createdAt}</Moment></TableCell>
+                    <TableCell align="left">
+                      <IconButton
+                        onClick={() => {
+                          setShowEditModal(true);
+                          setGrievance(row._id);
+                          setSelectedGrievanceId(row._id);
+                        }}
+                      >
+                        <VisibilityIcon fontSize="small"/>
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
+                  ))
+              }
           </TableBody>
         </Table>
       </TableContainer>
-      {data?.length / 10 + 1 > 10 && (
-        <Container sx={{ display: "grid", placeItems: "center", pt: 4 }}>
-          <Pagination count={parseInt(data?.length / 10) + 1} color="primary" onChange={(e, v) => setCurrentPage(v)} />
-        </Container>
-      )}
+
+      <TablePagination
+        rowsPerPageOptions={[10, 25, 100]}
+        component="div"
+        count={`${grievances.length}`}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+      />
+
+      <Dialog
+        open={showAddModal}
+        onClose={() => {
+          setShowAddModal(false);
+          setGrievance("");
+        }}
+        fullWidth={true}
+        maxWidth="xs"
+      >
+        <DialogTitle style={{ paddingBottom: 0 }}>Add Grievance</DialogTitle>
+        <DialogContentText></DialogContentText>
+        <DialogContent>
+          <TextField
+            autoFocus
+            label="Grievance"
+            type="text"
+            value={grievance}
+            onChange={(e) => setGrievance(e.target.value)}
+            fullWidth
+            variant="outlined"
+            size="small"
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => {
+              setShowAddModal(false);
+              setGrievance("");
+            }}
+          >
+            Cancel
+          </Button>
+          <Button>Add</Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={showEditModal}
+        onClose={() => {
+          setShowEditModal(false);
+          setGrievance("");
+        }}
+        fullWidth={true}
+        maxWidth="xs"
+      >
+        <DialogTitle style={{ paddingBottom: 0 }}>Edit Grievance</DialogTitle>
+        <DialogContentText></DialogContentText>
+        <DialogContent>
+          <TextField
+            autoFocus
+            label="Grievance"
+            type="text"
+            value={grievance}
+            onChange={(e) => setGrievance(e.target.value)}
+            fullWidth
+            variant="outlined"
+            size="small"
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => {
+              setShowEditModal(false);
+              setGrievance("");
+            }}
+          >
+            Cancel
+          </Button>
+          <Button>Save</Button>
+        </DialogActions>
+      </Dialog>
+
+      <ConfirmationModal
+        open={showDeleteModal}
+        message="Are you sure you want to delete this grievance?"
+        handleClose={() => setShowDeleteModal(false)}
+      />
     </>
   );
 }

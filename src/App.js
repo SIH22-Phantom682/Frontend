@@ -1,29 +1,29 @@
-import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import React, {useContext} from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./components/Login/Login";
 import "./App.css";
+import {AppContext} from './context/AppContext'
 import AdditionalRoutes from "./AdditionalRoutes";
 
 function App() {
-  // const [isloggedIn, setIsLoggedIn] = useState(false);
-  // // setIsLoggedIn(true);
-  const isloggedIn = true;
-
+  // const { user, isLoggedIn } = useContext(AppContext);
+  // console.log(user && user.role.name, isLoggedIn);
+  const isLoggedIn = true;
   return (
     <>
-      {!isloggedIn && (
+      {!isLoggedIn && (
         <div>
           <Router>
             <Routes>
               {/* Login & Register */}
-              <Route exact path="/" element={<Login />} />
-              <Route exact path="/register" />
+              <Route  path="/" element={<Login/>}/>
+              <Route  path="/register" />
             </Routes>
           </Router>
         </div>
-      )}
+       )}
 
-      {isloggedIn && <AdditionalRoutes />}
+      {isLoggedIn && <AdditionalRoutes />}
     </>
   );
 }

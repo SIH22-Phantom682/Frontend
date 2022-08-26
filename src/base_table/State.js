@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import ConfirmationModal from "./ConfirmationalModal";
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
 import Table from "@mui/material/Table";
@@ -14,27 +15,80 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import Select from "@mui/material/Select";
 import IconButton from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import TablePagination from '@mui/material/TablePagination';
 
-export default function Countries() {
-  const [countries, setCountries] = useState(undefined);
+export default function States() {
+  const [states, setStates] = useState([]);
+  const [state, setState] = useState("");
+  const [countries, setCountries] = useState([]);
   const [country, setCountry] = useState("");
-  const [selectedCountryId, setSelectedCountryId] = useState("");
+  const [selectedStateId, setSelectedStateId] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(+event.target.value);
+    setPage(0);
+  };
+
+  const fetchAllStates = async (e) => {
+    const result = await fetch(process.env.REACT_APP_API_URL + "/state", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+    });
+    const data = await result.json();
+    setStates(data.data);
+  };
+
+  const fetchAllCountries = async (e) => {
+    const result = await fetch(process.env.REACT_APP_API_URL + "/countries", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+    });
+    const data = await result.json();
+    setCountries(data.data);
+  };
+
+  useEffect(() => {
+    fetchAllStates();
+    fetchAllCountries();
+  }, []);
+
   return (
     <>
-      <Grid container spacing={1} justifyContent="space-between" alignItems="center">
+      <Grid
+        container
+        spacing={1}
+        justifyContent="space-between"
+        alignItems="center"
+      >
         <Grid item>
-          <h2>State</h2>
+          <h2>States</h2>
         </Grid>
         <Grid item>
-          <Button sx={{background:'#00263b'}} variant="contained" onClick={() => setShowAddModal(true)}>
-            + Add State
+          <Button variant="contained" onClick={() => setShowAddModal(true)}>
+            Add State
           </Button>
         </Grid>
       </Grid>
@@ -44,76 +98,110 @@ export default function Countries() {
             <TableRow>
               <TableCell>Sr. No.</TableCell>
               <TableCell align="left">Name</TableCell>
-              <TableCell align="left" style={{ paddingLeft: 25 }}>
-                State
-              </TableCell>
+              <TableCell align="left">Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {countries &&
-              countries.map((row, index) => (
-                <TableRow key={row._id} sx={{ "&:last-child td, &:last-child th": { border: 0 }, padding: 8 }}>
-                  <TableCell component="th" scope="row">
-                    {index + 1}.
-                  </TableCell>
-                  <TableCell align="left">{row.name}</TableCell>
-                  <TableCell align="left">
-                    <IconButton
-                      onClick={() => {
-                        setShowEditModal(true);
-                        setCountry(row.name);
-                        setSelectedCountryId(row._id);
-                      }}>
-                      <EditIcon fontSize="small" />
-                    </IconButton>
-                    <IconButton
-                      onClick={() => {
-                        setShowDeleteModal(true);
-                        setCountry(row.name);
-                        setSelectedCountryId(row._id);
-                      }}>
-                      <DeleteIcon fontSize="small" />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              ))}
+            {states &&
+              states
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((row, index) => (
+                  <TableRow
+                    key={row._id}
+                    sx={{
+                      "&:last-child td, &:last-child th": { border: 0 },
+                      padding: 8,
+                    }}
+                  >
+                    <TableCell component="th" scope="row">
+                      {index + 1}.
+                    </TableCell>
+                    <TableCell align="left">{row.name}</TableCell>
+                    <TableCell align="left">
+                      <IconButton
+                        onClick={() => {
+                          setShowEditModal(true);
+                          setState(row.name);
+                          setSelectedStateId(row._id);
+                        }}
+                      >
+                        <EditIcon fontSize="small" />
+                      </IconButton>
+                      <IconButton
+                        onClick={() => {
+                          setShowDeleteModal(true);
+                          setState(row.name);
+                        }}
+                      >
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
+                ))}
           </TableBody>
         </Table>
       </TableContainer>
+
+      <TablePagination
+        rowsPerPageOptions={[10, 25, 100]}
+        component="div"
+        count={`${states.length}`}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+      />
 
       <Dialog
         open={showAddModal}
         onClose={() => {
           setShowAddModal(false);
-          setCountry("");
+          setState("");
         }}
         fullWidth={true}
-        maxWidth="xs">
-        <DialogTitle style={{ paddingBottom: 0 }}>Add Country</DialogTitle>
+        maxWidth="xs"
+      >
+        <DialogTitle style={{ paddingBottom: 0 }}>Add State</DialogTitle>
         <DialogContentText></DialogContentText>
         <DialogContent>
           <TextField
             autoFocus
-            label="Country"
+            label="State"
             type="text"
-            value={country}
-            onChange={(e) => setCountry(e.target.value)}
+            value={state}
+            onChange={(e) => setState(e.target.value)}
             fullWidth
             variant="outlined"
             size="small"
           />
+          <FormControl fullWidth size="small" sx={{ mt: 3 }}>
+            <InputLabel id="demo-simple-select-label">Country</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={country}
+              label="Country"
+              onChange={(e) => setCountry(e.target.value)}
+            >
+              {countries &&
+                countries.map((country) => (
+                  <MenuItem key={country._id} value={country.name}>
+                    {country.name}
+                  </MenuItem>
+                ))}
+            </Select>
+          </FormControl>
         </DialogContent>
         <DialogActions>
           <Button
             onClick={() => {
               setShowAddModal(false);
-              setCountry("");
-            }}>
+              setState("");
+            }}
+          >
             Cancel
           </Button>
-          <Button disabled={!country}>
-            Add
-          </Button>
+          <Button>Add</Button>
         </DialogActions>
       </Dialog>
 
@@ -121,19 +209,20 @@ export default function Countries() {
         open={showEditModal}
         onClose={() => {
           setShowEditModal(false);
-          setCountry("");
+          setState("");
         }}
         fullWidth={true}
-        maxWidth="xs">
+        maxWidth="xs"
+      >
         <DialogTitle style={{ paddingBottom: 0 }}>Edit Country</DialogTitle>
         <DialogContentText></DialogContentText>
         <DialogContent>
           <TextField
             autoFocus
-            label="Country"
+            label="State"
             type="text"
-            value={country}
-            onChange={(e) => setCountry(e.target.value)}
+            value={state}
+            onChange={(e) => setState(e.target.value)}
             fullWidth
             variant="outlined"
             size="small"
@@ -143,16 +232,20 @@ export default function Countries() {
           <Button
             onClick={() => {
               setShowEditModal(false);
-              setCountry("");
-            }}>
+              setState("");
+            }}
+          >
             Cancel
           </Button>
-          <Button disabled={!country}>
-            Save
-          </Button>
+          <Button>Save</Button>
         </DialogActions>
       </Dialog>
 
+      <ConfirmationModal
+        open={showDeleteModal}
+        message="Are you sure you want to delete this country?"
+        handleClose={() => setShowDeleteModal(false)}
+      />
     </>
   );
 }

@@ -19,7 +19,7 @@ export default function DashboardData(){
                                 <img src="https://img.icons8.com/ios/50/FFFFFF/signing-a-document.png" alt=''/>
                             </Box>
                             <Box sx={{width:'300px',display:'flex',alignItems:'center',justifyContent:'center',textAlign:'center'}}>
-                                <Typography sx={{width:'100px',display:'flex',textAlign:'center',fontSize:'40px',color:'white',justifyContent:'center'}}>1</Typography>
+                                <Typography sx={{width:'100px',display:'flex',textAlign:'center',fontSize:'40px',color:'white',justifyContent:'center'}}>9</Typography>
                             </Box>
                         </CardContent>
                         <Box sx={{ display: 'flex',justifyContent:'center', alignItems: 'center', padding:'13px',background:'#e7880c',color:'#fff' }}>
@@ -34,7 +34,7 @@ export default function DashboardData(){
                                 <img src="https://img.icons8.com/dotty/80/FFFFFF/documents.png" alt=''/>
                             </Box>
                             <Box sx={{width:'300px',display:'flex',alignItems:'center',justifyContent:'center'}}>
-                                <Typography sx={{width:'100px',display:'flex',textAlign:'center',fontSize:'40px',color:'white',justifyContent:'center'}}>1</Typography>
+                                <Typography sx={{width:'100px',display:'flex',textAlign:'center',fontSize:'40px',color:'white',justifyContent:'center'}}>5</Typography>
                             </Box>
                         </CardContent>
                         <Box sx={{ display: 'flex',justifyContent:'center', alignItems: 'center', padding:'13px',background:'#2b8630',color:'#fff' }}>
@@ -49,7 +49,7 @@ export default function DashboardData(){
                                 <img src="https://img.icons8.com/pastel-glyph/64/FFFFFF/checked--v3.png" alt=''/>
                             </Box>
                             <Box sx={{width:'300px',display:'flex',alignItems:'center',justifyContent:'center'}}>
-                                <Typography sx={{width:'100px',display:'flex',textAlign:'center',fontSize:'40px',color:'white',justifyContent:'center'}}>1</Typography>
+                                <Typography sx={{width:'100px',display:'flex',textAlign:'center',fontSize:'40px',color:'white',justifyContent:'center'}}>4</Typography>
                             </Box>
                         </CardContent>
                         <Box sx={{ display: 'flex',justifyContent:'center', alignItems: 'center', padding:'13px',background:'#b52a25',color:'#fff' }}>

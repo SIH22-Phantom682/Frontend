@@ -5,9 +5,56 @@ import PieChartComponent from "./charts/PieChartComponent";
 import GroupBarChartComponent from "./charts/GroupBarChartComponent";
 import StackedbarChartComponent from "./charts/StackedBarChartComponent";
 import Grid from "@mui/material/Grid";
-import Top10 from "./charts/Top10";
+import Button from "@mui/material/Button";
+
 
 const role = "nodal-secretary";
+
+const Print = () =>{     
+  //console.log('print');  
+  let printContents = document.getElementById('printablediv').innerHTML;
+  let originalContents = document.body.innerHTML;
+  document.body.innerHTML = printContents;
+  window.print();
+ document.body.innerHTML = originalContents; 
+}
+
+const Print1 = () =>{     
+  //console.log('print');  
+  let printContents = document.getElementById('printablediv1').innerHTML;
+  let originalContents = document.body.innerHTML;
+  document.body.innerHTML = printContents;
+  window.print();
+ document.body.innerHTML = originalContents; 
+}
+
+const Print2 = () =>{     
+  //console.log('print');  
+  let printContents = document.getElementById('printablediv2').innerHTML;
+  let originalContents = document.body.innerHTML;
+  document.body.innerHTML = printContents;
+  window.print();
+ document.body.innerHTML = originalContents; 
+}
+
+
+const Print3 = () =>{     
+  //console.log('print');  
+  let printContents = document.getElementById('printablediv3').innerHTML;
+  let originalContents = document.body.innerHTML;
+  document.body.innerHTML = printContents;
+  window.print();
+ document.body.innerHTML = originalContents; 
+}
+
+const Print4 = () =>{     
+  //console.log('print');  
+  let printContents = document.getElementById('printablediv4').innerHTML;
+  let originalContents = document.body.innerHTML;
+  document.body.innerHTML = printContents;
+  window.print();
+ document.body.innerHTML = originalContents; 
+}
 
 export const ChartData = (
   <>
@@ -17,61 +64,26 @@ export const ChartData = (
       <>
         <Grid container spacing={4}>
           <Grid item xs={6}>
-            <Top10 title="Weekly Grievances" />
+             <Button variant="contained" sx={{background:"#00263b"}} onClick={Print}>Print</Button> 
+              <div id='printablediv'>
+                <BarChartComponent title="Weekly Grievances" />
+              </div>
           </Grid>
           <Grid item xs={6}>
-            <BarChartComponent title="Weekly Grievances" />
+             <Button variant="contained" sx={{background:"#00263b"}} onClick={Print1} >Print</Button>
+            <div id='printablediv1'><StackedbarChartComponent title="Stack bar Graph" /></div>
           </Grid>
           <Grid item xs={6}>
-            <StackedbarChartComponent title="Stack bar Graph" />
+             <Button variant="contained" sx={{background:"#00263b"}} onClick={Print2}>Print</Button>
+            <div  id='printablediv2'><PieChartComponent title="Pie Chart" /></div>
           </Grid>
           <Grid item xs={6}>
-            <PieChartComponent title="Pie Chart" />
+             <Button variant="contained" sx={{background:"#00263b"}} onClick={Print3}>Print</Button>
+            <div  id='printablediv3'><LineChartComponent title="Line Chart" /></div>
           </Grid>
           <Grid item xs={6}>
-            <LineChartComponent title="Line Chart" />
-          </Grid>
-          <Grid item xs={6}>
-            <GroupBarChartComponent title="Bar Chart" />
-          </Grid>
-        </Grid>
-      </>
-    )}
-    {role === "" && (
-      <>
-        <Grid container spacing={4}>
-          <Grid item xs={6}>
-            <Top10 title="Weekly Grievances" />
-          </Grid>
-          <Grid item xs={6}>
-            <BarChartComponent title="Weekly Grievances" />
-          </Grid>
-          <Grid item xs={6}>
-            <StackedbarChartComponent title="Stack bar Graph" />
-          </Grid>
-          <Grid item xs={6}>
-            <PieChartComponent title="Pie Chart" />
-          </Grid>
-          <Grid item xs={6}>
-            <LineChartComponent title="Line Chart" />
-          </Grid>
-          <Grid item xs={6}>
-            <GroupBarChartComponent title="Bar Chart" />
-          </Grid>
-        </Grid>
-      </>
-    )}
-    {role === "organization-admin" && (
-      <>
-        <Grid container spacing={4}>
-          <Grid item xs={6}>
-            <BarChartComponent title="Weekly Grievances" />
-          </Grid>
-          <Grid item xs={6}>
-            <StackedbarChartComponent title="Stack bar Graph" />
-          </Grid>
-          <Grid item xs={6}>
-            <PieChartComponent title="Pie Chart" />
+             <Button variant="contained" sx={{background:"#00263b"}} onClick={Print4} >Print</Button>
+            <GroupBarChartComponent title="Bar Chart" id='printablediv4' />
           </Grid>
         </Grid>
       </>
@@ -89,9 +101,5 @@ export const ChartData = (
 );
 
 export default function Analytics() {
-  return (
-    <div style={{ marginTop: 60 }}>
-      {ChartData}
-    </div>
-  );
+  return <div style={{ marginTop: 60 }}>{ChartData}</div>;
 }

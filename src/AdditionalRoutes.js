@@ -4,7 +4,7 @@ import Analytics from './analytics/Analytics'
 import Countries from "./base_table/Countries";
 import State from './base_table/State'
 import Roles from "./base_table/roles";
-import MainCategories from "./base_table/MainCategories";
+import MainCategory from "./base_table/MainCategories";
 import Grievance from "./grievance/Grievance";
 import DashboardData from "./pages/DashboardData";
 import RegisteredGrievance from './grievance/register-grievance/RegisteredGrievance'
@@ -38,7 +38,7 @@ function AdditionalRoutes() {
             <Route path='/dashboard/base_table/countries' element={<Countries/>}/>
             <Route path='/dashboard/base_table/state' element={<State/>}/>
             <Route path='/dashboard/base_table/roles' element={<Roles/>}/>
-            <Route path='/dashboard/categories/main-categories' element={<MainCategories/>}/>
+            <Route path='/dashboard/categories/main-categories' element={<MainCategory/>}/>
             <Route path='/dashboard/categories/sub-main-categories' element={<SubMainCategories/>}/>
             <Route path='/dashboard/base_table/total-grievance' element={<AllGrievances/>}/>
             <Route path='/dashboard/base_table/solved-grievance'/>
@@ -72,7 +72,7 @@ function AdditionalRoutes() {
             <Route path='/dashboard/change-password/user' element={<ChangePassword/>}/>
 
             {/* User Data */}
-            <Route path='/dashboard/user/nodal-officer' element={<User/>}/>
+            <Route exact path='/dashboard/user/nodal-officer' element={<User/>}/>
             <Route path='/dashboard/user/joint-secretary' />
             <Route path='/dashboard/user/additional-secretary' />
             <Route path='/dashboard/user/secretary' />
